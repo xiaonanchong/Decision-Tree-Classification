@@ -2,8 +2,8 @@ import numpy as np
 
 ########## step 1 Loading data ##########
 
-#data = np.loadtxt('WIFI_db/clean_dataset.txt') ## data-[2000, 8]
-data = np.loadtxt('WIFI_db/noisy_dataset.txt')
+#data = np.loadtxt('wifi_db/clean_dataset.txt') ## data-[2000, 8]
+data = np.loadtxt('wifi_db/noisy_dataset.txt')
 
 ########## step 2 Creating Decision Tree ##########
 
@@ -27,7 +27,7 @@ def decision_tree_learning(training_data, depth):
 	    (right_branch, r_depth) = decision_tree_learning(right, depth +1)
 	    node = {'atri': split_attri, 'value': split_value, 'l': left_branch, 'r': right_branch, 'leaf': -1}
 
-    return (node, max(l_depth, r_depth))
+    return node, max(l_depth, r_depth)
 
 
 def find_split(training_data):
@@ -59,6 +59,7 @@ def find_split(training_data):
     print(split_value)
     print(same_label(training_data))
     return -100, 0
+
   return attri, value
 
 
@@ -114,34 +115,29 @@ def same_label(data):
 
 ########## Step 3: Evaluation ##########
 ## 10-fold cross validataion 
-N = 10
-
 def ten_fold_cross_validation(data):
+  N = 10
   total_len = data.shape[0]
   one_fold = int(total_len/10)
-
   total_error = 0
-
   for i in range(N):        
-    test_data = data[one_fold*i : one_fold*(i+1)]
+    test_data = data[one_fold*i:one_fold*(i+1)]
     train_data = np.concatenate((data[0: one_fold*i], data[one_fold*(i+1):]), axis = 0)
-    (root_node, depth) = decision_tree_learning(train_data, 0) #### training function
+    root_node = decision_tree_learning(train_data, 0) 
     error = evaluate(root_node, test_data)
     total_error = total_error + error
-
-  error_rate = float(total_error)/(one_fold*N)
+  error_rate = float(total_error)/(total_len)
   return 1-error_rate
-
 
 def evaluate(node, split_data): 
   d = np.array(split_data)
-
+  print('[]')
+  print(node)
   atri_index = node['atri']
   split_value = node['value']
   left_node = node['l']
   right_node = node['r']
   leaf = node['leaf']
-  
   if leaf == -1:  
     left_data, right_data = extract_data(split_data, atri_index, split_value)
     e1 = evaluate(left_node, left_data)
@@ -149,38 +145,22 @@ def evaluate(node, split_data):
     error = e1 + e2
   else:
     count = 0
-    for i in split_data:
-      if int(i[7]) != leaf:
+    for i in range(split_data.shape[0]):
+      if int(split_data[i,split_data.shape[1]-1]) != int(leaf):
         count = count + 1
     error = count
-
   return error
   
-
-def error(leaf, split_data): ## not used!
-
-  count = 0
-  for i in split_data:
-    if int(i[7]) == leaf:
-      count = count + 1
-  return count
-
-
 def extract_data(data, atri_index, split_value):
-  right_data = [[0,0,0,0,0,0,0,0]]
-  left_data =[[0,0,0,0,0,0,0,0]]
-
-  for i in range(np.array(data).shape[0]):
-    if data[i, atri_index] > split_value:
-      right_data = np.concatenate((right_data, [data[i, :]]), axis = 0)
-    else:
-      left_data = np.concatenate((left_data, [data[i, :]]), axis = 0) 
-  return left_data[1:], right_data[1:]
+  data = np.array(data)
+  right_data = data[np.where(data[:,atri_index]>split_value)]
+  left_data = data[np.where(data[:,atri_index]<=split_value)]
+  return left_data, right_data
 
 
 ######### step 4 Pruning ##########
 ## given decision tree tained by training data, pruning using validataion data set
-
+'''
 def pruing(root_node, training_data, validate_data):
   
   while not pruned(root_node):
@@ -213,10 +193,10 @@ def depth_first_search(data, node, parent, lr, flag):
   else: ## if a terminal node
     print('error: detect terminal node')
     
-
+'''
 
 ############################ TEST ###############################
-dt = decision_tree_learning(data, 0)
+dt, l = decision_tree_learning(data, 0)
 cr = ten_fold_cross_validation(data)
 print('----', cr)
 
