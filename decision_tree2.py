@@ -144,27 +144,6 @@ def evaluate(node, split_data):
         count = count + 1
     error = count
   return error
-
-def predict(node, data):
-  predict = np.zeros((data.shape[0], 1))
-  for i in range(data.shape[0]):
-    predict[i] = p(node, data[i])
-  return predict
-
-def p(node, d):
-  atri = node['atri']
-  value = node['value']
-  l = node['l']
-  r = node['r']
-  leaf = node['leaf']
-  if leaf == -1:
-      if d[atri] <= value:
-          return p(l,d)
-      else:
-          return p(r,d)
-
-  else:
-    return leaf
   
 def extract_data(data, atri_index, split_value):
   data = np.array(data)
@@ -283,8 +262,6 @@ root1 = decision_tree_learning(training_data, 0)
 cr1 = evaluate(root1, test_data)/float(len(test_data))
 print('----before pruing', 1-cr1)
 
-
-print(predict(root1, test_data))
 
 root2= dfs(root1, training_data, validation_data)
 cr2 = evaluate(root2, test_data)/float(len(test_data))
