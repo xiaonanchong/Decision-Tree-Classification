@@ -275,6 +275,7 @@ def error(data, leaf):
   return e
 
 
+#============================================================================
 def tfcv(data):
   N = 10
   total_len = data.shape[0]
@@ -317,6 +318,7 @@ def tfcv(data):
 
 
 ######################### test
+'''
 data = np.loadtxt('wifi_db/noisy_dataset.txt')
 #np.random.seed(2)
 idx = np.random.permutation(data.shape[0])
@@ -330,6 +332,7 @@ validation_data = data[l8:l9]
 test_data = data[l9:]
 
 tfcv(data)
+'''
 #dt= decision_tree_learning(data, 0)
 '''
 d1 = 0
@@ -344,6 +347,8 @@ print('----after pruing:', 1-cr2, 'depth: ', d2)
 
 print(root1 == root2)
 '''
+
+'''
 cr, low, acc, p_acc, node1, node2 = tfcv(data[0:l9])
 print(cr, low)
 print(acc)
@@ -354,11 +359,11 @@ for i in range(len(acc)):
   if p_acc[i]-acc[i]> high:
     high = p_acc[i]-acc[i]
     idx = i
-    
-    
 print(idx, ' : ', high)
 '''
 
+
+'''
 root = root1
 cr = 0
 while not pruing_check(root):
