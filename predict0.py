@@ -36,7 +36,7 @@ def majority(dataset):
 	record_num = num_label
     return record_label 
 
-def decision_tree_learning(dataset, depth):
+def decision_tree_learning0(dataset, depth):
     diction = {'atri':None,'value':None,'l': None,'r': None,'leaf':None}
     NumS = dataset.shape[0]
     Num = dataset.shape[1]
@@ -82,39 +82,37 @@ def decision_tree_learning(dataset, depth):
             record_num = j2
     	    record_right = np.array(right_data)
             record_left = np.array(left_data) 	
-
     
     information_gain = H - record
     diction['atri'] = record_atri
     diction['value'] = record_num
+    
+    depth += 1 	    
+    
     if record > 0.:
       if ReL > 0:		
         diction['leaf'] = -1
-        L_depth = depth+1
-        dicleft, L_depth=decision_tree_learning(record_left, L_depth)
+        dicleft,depth_1 =decision_tree_learning(record_left, depth)
         diction['l'] = dicleft  
       else:
         if len(record_left) != 0:
            diction['l'] = {'atri':None,'value':None,'l': None,'r': None,'leaf':majority(record_left)}
            diction['leaf'] = -1
-           L_depth = depth+1
       if ReR > 0:
-        diction['leaf'] = -1	
-        R_depth = depth+1	
-        dicright, R_depth=decision_tree_learning(record_right, R_depth) 
+        diction['leaf'] = -1		
+        dicright,depth_2 =decision_tree_learning(record_right, depth) 
         diction['r'] = dicright 	 
       else:	
         if len(record_right) != 0:
            diction['r'] = {'atri':None,'value':None,'l': None,'r': None,'leaf':majority(record_right)}
            diction['leaf'] = -1
-           R_depth = depth+1
+      #depth = max(depth_1, depth_2)
     else:
       diction['leaf'] = -1
       diction['l'] = {'atri':None,'value':None,'l': None,'r': None,'leaf':majority(record_left)}
       diction['r'] = {'atri':None,'value':None,'l': None,'r': None,'leaf':majority(record_right)}
-      R_depth = depth+1
-      L_depth = depth+1
-    return diction, max(L_depth,R_depth)
+    
+    return diction, depth
 
 ######################## STEP 2 #####################################
 def ten_fold_cross_validation(data):
@@ -138,7 +136,7 @@ def evaluate(node, split_data):
   d = np.array(split_data)
   atri_index = node['atri']
   split_value = node['value']
-  left_node = node['l']
+  left_node = node['l']0.8055555555555556, 0.8555555555555556
   right_node = node['r']
   leaf = node['leaf']
   if leaf == -1:  
@@ -264,7 +262,7 @@ def dfs(node, training_data, validation_data):
         else:
           pass
       #------------------------------------------------------------------------------------    
-      return new_node
+      return new_node0.8055555555555556, 0.8555555555555556
 
 
 def error(data, leaf):
@@ -298,7 +296,7 @@ def tfcv(data):
     error_rate = float(error) / one_fold
     
     node1.append(root_node)
-    acc.append(1 - error_rate)      
+    acc.append(1 - error_rate)      0.8055555555555556, 0.8555555555555556
     root2= dfs(root_node, training_data, test_data)
     node2.append(root2)
     error2 = evaluate(root2, test_data)
